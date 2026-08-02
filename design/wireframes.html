@@ -1,0 +1,1085 @@
+<title>Cadence — Habit & Reminder App Wireframes</title>
+<style>
+  :root {
+    --paper:      #F1F3EF;
+    --ground:     #FBFCFA;
+    --card:       #FFFFFF;
+    --ink:        #16211C;
+    --ink-soft:   #3D4A43;
+    --muted:      #79857C;
+    --line:       #DDE2DA;
+    --line-soft:  #E9EDE6;
+    --accent:     #3F6B4F;
+    --accent-dim: #E3ECE4;
+    --signal:     #B0701F;
+    --signal-dim: #F4E9D9;
+    --dot:        rgba(22, 33, 28, 0.055);
+
+    --f-display: 'Palatino Linotype', Palatino, 'Iowan Old Style', Charter, Cambria, Georgia, serif;
+    --f-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --f-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Consolas, 'Liberation Mono', monospace;
+
+    --gap: 1.5rem;
+    --rule: 1px solid var(--line);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:      #0E1512;
+      --ground:     #121A16;
+      --card:       #18211C;
+      --ink:        #E6EBE5;
+      --ink-soft:   #B6C1B8;
+      --muted:      #7E8C82;
+      --line:       #2A352E;
+      --line-soft:  #222C26;
+      --accent:     #7BAE8B;
+      --accent-dim: #1E2E23;
+      --signal:     #D9A05B;
+      --signal-dim: #2E2517;
+      --dot:        rgba(230, 235, 229, 0.05);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:      #0E1512;
+    --ground:     #121A16;
+    --card:       #18211C;
+    --ink:        #E6EBE5;
+    --ink-soft:   #B6C1B8;
+    --muted:      #7E8C82;
+    --line:       #2A352E;
+    --line-soft:  #222C26;
+    --accent:     #7BAE8B;
+    --accent-dim: #1E2E23;
+    --signal:     #D9A05B;
+    --signal-dim: #2E2517;
+    --dot:        rgba(230, 235, 229, 0.05);
+  }
+  :root[data-theme="light"] {
+    --paper:      #F1F3EF;
+    --ground:     #FBFCFA;
+    --card:       #FFFFFF;
+    --ink:        #16211C;
+    --ink-soft:   #3D4A43;
+    --muted:      #79857C;
+    --line:       #DDE2DA;
+    --line-soft:  #E9EDE6;
+    --accent:     #3F6B4F;
+    --accent-dim: #E3ECE4;
+    --signal:     #B0701F;
+    --signal-dim: #F4E9D9;
+    --dot:        rgba(22, 33, 28, 0.055);
+  }
+
+  * { box-sizing: border-box; }
+
+  .page {
+    background-color: var(--paper);
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 12px 12px;
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 1.25rem 6rem;
+  }
+
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  /* ---------- type ---------- */
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0;
+  }
+  h1, h2, h3 { font-family: var(--f-display); font-weight: 600; text-wrap: balance; margin: 0; }
+  h1 { font-size: clamp(2.25rem, 6vw, 3.5rem); line-height: 1.05; letter-spacing: -0.015em; }
+  h2 { font-size: clamp(1.5rem, 3.4vw, 2rem); line-height: 1.15; letter-spacing: -0.01em; }
+  h3 { font-size: 1.125rem; line-height: 1.3; }
+  p { margin: 0; max-width: 64ch; }
+  .lede { font-size: 1.0625rem; color: var(--ink-soft); }
+  strong { font-weight: 600; color: var(--ink); }
+  code {
+    font-family: var(--f-mono);
+    font-size: 0.85em;
+    background: var(--accent-dim);
+    color: var(--accent);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead {
+    padding: 4.5rem 0 2.5rem;
+    display: flex; flex-direction: column; gap: 1.25rem;
+  }
+  .masthead p.lede { max-width: 56ch; }
+
+  .decisions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border: var(--rule);
+    margin-top: 1.5rem;
+  }
+  .decision { background: var(--ground); padding: 0.9rem 1rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .decision dt { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .decision dd { margin: 0; font-size: 0.9375rem; font-weight: 500; line-height: 1.35; }
+
+  /* ---------- sections ---------- */
+  .section { padding-top: 4rem; }
+  .section-head { display: flex; flex-direction: column; gap: 0.4rem; padding-bottom: 1.75rem; }
+  .section-head p { color: var(--ink-soft); }
+  hr.divider { border: 0; border-top: var(--rule); margin: 0; }
+
+  /* ---------- spec rows: device + annotations ---------- */
+  .spec { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 2.5rem; padding: 2.25rem 0; border-top: 1px solid var(--line-soft); align-items: start; }
+  .spec:first-of-type { border-top: 0; }
+  @media (max-width: 760px) { .spec { grid-template-columns: 1fr; gap: 1.75rem; } }
+
+  .notes { display: flex; flex-direction: column; gap: 1rem; }
+  .notes h3 { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+  .slug {
+    font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 2px;
+    padding: 0.15rem 0.4rem; line-height: 1;
+  }
+  .notes ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+  .notes li { position: relative; padding-left: 1.1rem; font-size: 0.9375rem; color: var(--ink-soft); line-height: 1.5; }
+  .notes li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 5px; height: 5px; background: var(--accent); }
+  .notes li.sig::before { background: var(--signal); }
+  .notes li b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- device frame ---------- */
+  .device {
+    width: 300px; height: 620px;
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    padding: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 28px -18px rgba(0,0,0,0.35);
+    position: sticky; top: 1.5rem;
+  }
+  @media (max-width: 760px) { .device { position: static; } }
+  .screen {
+    width: 100%; height: 100%;
+    background: var(--card);
+    border-radius: 19px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    font-size: 12px; line-height: 1.4;
+  }
+  .statusbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 14px 3px;
+    font-family: var(--f-mono); font-size: 9px; color: var(--muted); letter-spacing: 0.04em;
+  }
+  .body { flex: 1; overflow: hidden; padding: 6px 14px 0; display: flex; flex-direction: column; gap: 10px; }
+  .body.center { align-items: center; text-align: center; }
+
+  .scr-title { font-family: var(--f-display); font-size: 19px; font-weight: 600; line-height: 1.15; }
+  .scr-sub { font-size: 10.5px; color: var(--muted); }
+  .kicker { font-family: var(--f-mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+  /* habit rows */
+  .hrow {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px;
+    border: 1px solid var(--line-soft); border-radius: 12px;
+    background: var(--ground);
+  }
+  .hrow.done { background: var(--accent-dim); border-color: transparent; }
+  .tick {
+    width: 20px; height: 20px; border-radius: 50%; flex: 0 0 20px;
+    border: 1.5px solid var(--line); display: grid; place-items: center;
+    font-size: 10px; color: transparent;
+  }
+  .hrow.done .tick { background: var(--accent); border-color: var(--accent); color: var(--card); }
+  .hmeta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .hname { font-size: 12px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hrow.done .hname { color: var(--accent); }
+  .hsub { font-family: var(--f-mono); font-size: 8.5px; color: var(--muted); letter-spacing: 0.03em; }
+  .bar { height: 3px; border-radius: 2px; background: var(--line-soft); overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--accent); }
+  .pill-btn {
+    font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.06em;
+    border: 1px solid var(--line); border-radius: 20px; padding: 3px 8px;
+    color: var(--ink-soft); white-space: nowrap;
+  }
+  .pill-btn.solid { background: var(--accent); border-color: var(--accent); color: var(--card); }
+
+  /* ring */
+  .ring { position: relative; width: 132px; height: 132px; margin: 2px auto 0; }
+  .ring svg { transform: rotate(-90deg); display: block; }
+  .ring .ring-num { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 1px; }
+  .ring-big { font-family: var(--f-display); font-size: 30px; font-weight: 600; line-height: 1; }
+  .ring-lbl { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+
+  /* nudge card */
+  .nudge {
+    border: 1px solid var(--signal); background: var(--signal-dim);
+    border-radius: 12px; padding: 9px 11px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .nudge .kicker { color: var(--signal); }
+  .nudge p { font-size: 11px; color: var(--ink-soft); margin: 0; }
+
+  /* tab bar */
+  .tabbar {
+    display: flex; border-top: 1px solid var(--line-soft);
+    padding: 8px 14px 10px; gap: 4px; background: var(--card);
+  }
+  .tab { flex: 1; text-align: center; font-family: var(--f-mono); font-size: 8.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .tab i { display: block; width: 15px; height: 15px; border: 1.5px solid var(--muted); border-radius: 4px; }
+  .tab.on { color: var(--accent); }
+  .tab.on i { border-color: var(--accent); background: var(--accent-dim); }
+
+  /* chips (onboarding) */
+  .chipgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .chip {
+    border: 1px solid var(--line); border-radius: 10px; padding: 8px 9px;
+    display: flex; flex-direction: column; gap: 2px; background: var(--ground);
+  }
+  .chip.on { border-color: var(--accent); background: var(--accent-dim); }
+  .chip b { font-size: 11px; font-weight: 500; }
+  .chip.on b { color: var(--accent); }
+  .chip span { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; }
+  .cta {
+    background: var(--accent); color: var(--card);
+    border-radius: 22px; padding: 11px; text-align: center;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.01em;
+  }
+  .cta.ghost { background: transparent; color: var(--muted); font-weight: 400; padding: 6px; }
+
+  /* segmented */
+  .seg { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+  .seg div { padding: 6px 2px; text-align: center; font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-right: 1px solid var(--line); }
+  .seg div:last-child { border-right: 0; }
+  .seg div.on { background: var(--accent); color: var(--card); }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .input { border: 1px solid var(--line); border-radius: 9px; padding: 9px 10px; font-size: 12px; background: var(--ground); }
+  .input.ph { color: var(--muted); }
+
+  .days { display: flex; gap: 5px; }
+  .days span { flex: 1; aspect-ratio: 1; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); font-size: 9.5px; color: var(--muted); }
+  .days span.on { background: var(--accent); border-color: var(--accent); color: var(--card); }
+
+  /* heatmap */
+  .heat { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 3px; }
+  .heat i { width: 100%; aspect-ratio: 1; border-radius: 2px; background: var(--line-soft); display: block; }
+  .heat i.l1 { background: color-mix(in srgb, var(--accent) 25%, var(--line-soft)); }
+  .heat i.l2 { background: color-mix(in srgb, var(--accent) 55%, var(--line-soft)); }
+  .heat i.l3 { background: var(--accent); }
+
+  .statgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  .stat { border: 1px solid var(--line-soft); border-radius: 10px; padding: 8px 9px; display: flex; flex-direction: column; gap: 1px; }
+  .stat b { font-family: var(--f-display); font-size: 19px; font-weight: 600; line-height: 1.1; }
+  .stat span { font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.11em; text-transform: uppercase; color: var(--muted); }
+
+  .srow { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--line-soft); gap: 10px; }
+  .srow em { font-style: normal; font-size: 11.5px; }
+  .srow span { font-family: var(--f-mono); font-size: 9px; color: var(--muted); letter-spacing: 0.04em; }
+  .toggle { width: 28px; height: 16px; border-radius: 10px; background: var(--accent); position: relative; flex: 0 0 28px; }
+  .toggle::after { content: ""; position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--card); }
+  .toggle.off { background: var(--line); }
+  .toggle.off::after { right: auto; left: 2px; }
+
+  /* notification + widget mocks */
+  .notif {
+    border: 1px solid var(--line); border-radius: 14px; background: var(--ground);
+    padding: 11px 12px; display: flex; flex-direction: column; gap: 7px;
+  }
+  .notif-head { display: flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .notif-head b { width: 12px; height: 12px; border-radius: 3px; background: var(--accent); }
+  .notif-actions { display: flex; gap: 14px; padding-top: 4px; border-top: 1px solid var(--line-soft); font-family: var(--f-mono); font-size: 9.5px; letter-spacing: 0.06em; color: var(--accent); text-transform: uppercase; }
+
+  /* ---------- flow map ---------- */
+  .flow { border: var(--rule); background: var(--ground); padding: 1.75rem 1.5rem; overflow-x: auto; }
+  .flow-inner { display: flex; flex-direction: column; gap: 1.1rem; min-width: 520px; }
+  .flow-lane { display: flex; align-items: center; gap: 0.65rem; }
+  .node {
+    border: 1px solid var(--line); background: var(--card); border-radius: 4px;
+    padding: 0.5rem 0.8rem; font-size: 0.875rem; font-weight: 500; white-space: nowrap;
+  }
+  .node.root { border-color: var(--accent); color: var(--accent); }
+  .node.sig { border-color: var(--signal); color: var(--signal); }
+  .arrow { font-family: var(--f-mono); color: var(--muted); font-size: 0.75rem; }
+  .flow-lane .lane-lbl { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); width: 76px; flex: 0 0 76px; }
+
+  /* ---------- tables ---------- */
+  .tablewrap { overflow-x: auto; border: var(--rule); background: var(--ground); }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.875rem; }
+  th, td { text-align: left; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 400; border-bottom: var(--rule); }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.mono { font-family: var(--f-mono); font-size: 0.75rem; color: var(--ink-soft); letter-spacing: 0.02em; }
+  .type-tag { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.15rem 0.4rem; border: 1px solid var(--line); border-radius: 2px; color: var(--muted); white-space: nowrap; }
+
+  /* ---------- algorithm steps ---------- */
+  .steps { counter-reset: s; display: flex; flex-direction: column; gap: 0; border: var(--rule); background: var(--ground); }
+  .step { counter-increment: s; display: grid; grid-template-columns: 3rem minmax(0,1fr); border-bottom: 1px solid var(--line-soft); }
+  .step:last-child { border-bottom: 0; }
+  .step::before {
+    content: counter(s, decimal-leading-zero);
+    font-family: var(--f-mono); font-size: 0.6875rem; color: var(--signal);
+    padding: 0.95rem 0 0.95rem 1rem; letter-spacing: 0.06em;
+  }
+  .step-body { padding: 0.95rem 1.1rem 0.95rem 0; display: flex; flex-direction: column; gap: 0.25rem; }
+  .step-body b { font-size: 0.9375rem; }
+  .step-body p { font-size: 0.875rem; color: var(--ink-soft); }
+
+  /* ---------- phases ---------- */
+  .phases { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--line); border: var(--rule); }
+  .phase { background: var(--ground); padding: 1.1rem 1.15rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .phase .num { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.14em; color: var(--signal); }
+  .phase h3 { font-size: 1rem; }
+  .phase ul { margin: 0; padding-left: 1.05rem; display: flex; flex-direction: column; gap: 0.3rem; }
+  .phase li { font-size: 0.8125rem; color: var(--ink-soft); }
+
+  /* ---------- risks ---------- */
+  .risks { display: flex; flex-direction: column; gap: 1px; background: var(--line); border: var(--rule); }
+  .risk { background: var(--ground); padding: 1rem 1.15rem; display: grid; grid-template-columns: minmax(0,1fr); gap: 0.3rem; }
+  .risk b { font-size: 0.9375rem; }
+  .risk p { font-size: 0.875rem; color: var(--ink-soft); }
+  .risk .lvl { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.12em; text-transform: uppercase; }
+  .lvl.high { color: var(--signal); }
+  .lvl.med { color: var(--muted); }
+
+  .foot { padding-top: 4rem; color: var(--muted); font-size: 0.8125rem; font-family: var(--f-mono); letter-spacing: 0.04em; }
+
+  a { color: var(--accent); }
+  a:focus-visible, .node:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="page">
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">Concept wireframes · v0.1 · Flutter · offline-only</p>
+    <h1>Cadence</h1>
+    <p class="lede">A quiet habit tracker that learns when you actually do things, and asks then. No accounts, no sync, no server — every byte stays on the phone.</p>
+
+    <dl class="decisions">
+      <div class="decision"><dt>Stack</dt><dd>Flutter + Drift (SQLite)</dd></div>
+      <div class="decision"><dt>Habit types</dt><dd>Yes/no · Count · Timed · Quit</dd></div>
+      <div class="decision"><dt>Direction</dt><dd>Calm &amp; minimal</dd></div>
+      <div class="decision"><dt>Reminders</dt><dd>Adaptive, on-device</dd></div>
+      <div class="decision"><dt>Ships with</dt><dd>Dark mode · Stats · Widget · Export</dd></div>
+    </dl>
+  </header>
+
+  <hr class="divider" />
+
+  <!-- ============ THE IDEA ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">The idea</p>
+      <h2>One question, answered well</h2>
+    </div>
+    <p class="lede" style="margin-bottom:1rem;">Most habit apps shout. They stack badges, streak-freeze tokens and confetti on top of a checklist, and the noise becomes the thing you quit. Cadence takes the opposite bet: the surface stays almost empty, and all the effort goes somewhere invisible — <strong>choosing the moment it speaks</strong>.</p>
+    <p>Every completion is timestamped. After a habit has a week of history, the app knows you meditate around 7:10am on weekdays and closer to 9am on Sundays — so that's when it taps you, not at some arbitrary time you picked once during setup and now ignore. A reminder that arrives when you were about to act anyway doesn't feel like nagging. That's the whole product.</p>
+  </section>
+
+  <!-- ============ WIREFRAMES ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">Wireframes</p>
+      <h2>Seven screens</h2>
+      <p>Mid-fidelity — real copy, real palette, simplified detail. Light theme shown; every screen has a dark counterpart.</p>
+    </div>
+
+    <!-- ONBOARDING -->
+    <div class="spec">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+          <div class="body">
+            <div style="display:flex;flex-direction:column;gap:3px;padding-top:6px;">
+              <div class="kicker">Step 2 of 3</div>
+              <div class="scr-title">Pick a few to begin</div>
+              <div class="scr-sub">Three or four is plenty. You can add more whenever.</div>
+            </div>
+            <div class="chipgrid" style="margin-top:2px;">
+              <div class="chip on"><b>Drink water</b><span>Count · 8</span></div>
+              <div class="chip on"><b>Morning walk</b><span>Yes / no</span></div>
+              <div class="chip on"><b>Read</b><span>Count · 20 pg</span></div>
+              <div class="chip on"><b>No smoking</b><span>Quit</span></div>
+              <div class="chip"><b>Meditate</b><span>Timed · 10m</span></div>
+              <div class="chip"><b>Stretch</b><span>Timed · 5m</span></div>
+              <div class="chip"><b>Journal</b><span>Yes / no</span></div>
+              <div class="chip"><b>Sleep by 11</b><span>Yes / no</span></div>
+              <div class="chip"><b>No sugar</b><span>Quit</span></div>
+              <div class="chip"><b>Study</b><span>Timed · 1h</span></div>
+            </div>
+            <div style="margin-top:auto;padding-bottom:10px;display:flex;flex-direction:column;gap:2px;">
+              <div class="cta">Continue with 4</div>
+              <div class="cta ghost">Start empty instead</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3><span class="slug">Onboarding</span> The habit picker</h3>
+        <ul>
+          <li>Three screens total: <b>a one-line promise</b> ("Everything stays on this phone"), <b>this picker</b>, then <b>the notification permission ask</b> — requested last, with a sentence explaining what it buys them. Asking for permission before showing value is the fastest way to get denied.</li>
+          <li>Twelve curated habits spanning all four types, so the database is populated with one of each from minute one. <b>Four come pre-checked</b> — the user confirms a choice rather than facing a blank slate.</li>
+          <li>Each chip states its type and default target, so the four habit models are taught implicitly, without a tutorial.</li>
+          <li>"Start empty instead" is always available and never hidden — respecting the person who knows exactly what they want.</li>
+          <li class="sig">Every seeded habit gets a sensible default nudge time by category (movement → 7:30am, wind-down → 9:30pm). The adaptive engine overrides these as soon as it has real data.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HOME -->
+    <div class="spec">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+          <div class="body">
+            <div style="display:flex;flex-direction:column;gap:2px;padding-top:4px;">
+              <div class="kicker">Sunday, 2 August</div>
+              <div class="scr-title">Good morning</div>
+            </div>
+
+            <div class="ring">
+              <svg viewBox="0 0 120 120" width="132" height="132" aria-hidden="true">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--line-soft)" stroke-width="9" />
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="9"
+                        stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="140" />
+              </svg>
+              <div class="ring-num">
+                <div class="ring-big">4/7</div>
+                <div class="ring-lbl">Today</div>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:2px;">
+              <div class="hrow done">
+                <div class="tick">✓</div>
+                <div class="hmeta"><div class="hname">Morning walk</div><div class="hsub">18-day streak</div></div>
+              </div>
+              <div class="hrow">
+                <div class="tick"></div>
+                <div class="hmeta">
+                  <div class="hname">Drink water</div>
+                  <div class="bar"><i style="width:62%"></i></div>
+                  <div class="hsub">5 of 8 glasses</div>
+                </div>
+                <div class="pill-btn solid">+1</div>
+              </div>
+              <div class="hrow">
+                <div class="tick"></div>
+                <div class="hmeta"><div class="hname">Meditate</div><div class="hsub">0:00 / 10:00</div></div>
+                <div class="pill-btn">Start</div>
+              </div>
+              <div class="hrow done">
+                <div class="tick">✓</div>
+                <div class="hmeta"><div class="hname">No smoking</div><div class="hsub">14 days clean</div></div>
+              </div>
+              <div class="hrow">
+                <div class="tick"></div>
+                <div class="hmeta"><div class="hname">Read</div><div class="bar"><i style="width:30%"></i></div><div class="hsub">6 of 20 pages</div></div>
+                <div class="pill-btn">+1</div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab on"><i></i>Today</div>
+            <div class="tab"><i></i>Stats</div>
+            <div class="tab"><i></i>Settings</div>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3><span class="slug">Home</span> Today</h3>
+        <ul>
+          <li>The ring is the only large element on the screen — <b>one glance answers "am I on track?"</b> Everything below it is detail.</li>
+          <li>Each habit type gets a different affordance, but the same row shape: yes/no taps the circle, count taps <code>+1</code>, timed taps <code>Start</code>, quit auto-completes at midnight unless the user logs a slip.</li>
+          <li>Completed rows tint and sink rather than disappearing — <b>seeing what you've done is half the reward</b>, and vanishing rows make the list feel unstable.</li>
+          <li>No confetti, no sound, no XP. The reward is the row turning green and the ring closing. Calm means the app never celebrates louder than the user does.</li>
+          <li>Long-press a row to backfill yesterday; swipe left to skip a day without breaking the streak (a deliberate "rest day", not a failure).</li>
+          <li>Only three tabs. Add-habit is a small <code>+</code> in the header, not a floating button competing with the ring.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- HABIT DETAIL -->
+    <div class="spec">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+          <div class="body">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;">
+              <div class="kicker">← Today</div>
+              <div class="kicker">Edit</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="scr-title">Morning walk</div>
+              <div class="scr-sub">Yes / no · every day</div>
+            </div>
+
+            <div class="statgrid">
+              <div class="stat"><b>18</b><span>Current streak</span></div>
+              <div class="stat"><b>31</b><span>Best streak</span></div>
+              <div class="stat"><b>87%</b><span>Last 30 days</span></div>
+              <div class="stat"><b>7:12</b><span>Usual time</span></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div class="kicker">Last 10 weeks</div>
+              <div class="heat">
+                <i class="l3"></i><i class="l3"></i><i></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l1"></i><i class="l3"></i><i class="l3"></i><i></i>
+                <i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i></i><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i></i><i class="l1"></i>
+                <i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i>
+                <i></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i></i><i></i><i></i>
+              </div>
+            </div>
+
+            <div class="nudge">
+              <div class="kicker">Reminder · adaptive</div>
+              <p>You usually finish this by <b>7:12 am</b> on weekdays. Cadence nudges at 6:55.</p>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div class="kicker">Best day</div>
+              <div class="scr-sub" style="color:var(--ink-soft);">Tuesdays — 96% done. Sundays are your weak spot at 61%.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3><span class="slug">Detail</span> One habit, up close</h3>
+        <ul>
+          <li>Four numbers, then the picture. <b>Usual time</b> sits alongside the streaks as a first-class stat — it's the thing that makes this app different, so it isn't buried in settings.</li>
+          <li>The heatmap is the one place density is welcome. Ten weeks fits without scrolling; gaps read as honestly as fills.</li>
+          <li class="sig">The ochre card is the app <b>explaining itself</b>. Adaptive scheduling is invisible magic, and invisible magic feels broken — so every screen that uses it says, in plain words, what it learned and what it will do. One tap here switches to a fixed time.</li>
+          <li>"Best day" turns raw logs into a sentence a person can act on. No chart needed for a finding this small.</li>
+          <li>Edit and Archive live in the header. <b>Archive, never delete</b> — history survives, so a habit resumed in October still shows March.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ADD / EDIT -->
+    <div class="spec">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+          <div class="body">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-top:4px;">
+              <div class="kicker">Cancel</div>
+              <div class="kicker" style="color:var(--accent);">Save</div>
+            </div>
+            <div class="scr-title">New habit</div>
+
+            <div class="field">
+              <div class="kicker">Name</div>
+              <div class="input">Evening stretch</div>
+            </div>
+
+            <div class="field">
+              <div class="kicker">Type</div>
+              <div class="seg">
+                <div>Yes/no</div><div>Count</div><div class="on">Timed</div><div>Quit</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="kicker">Daily target</div>
+              <div class="input">10 minutes</div>
+            </div>
+
+            <div class="field">
+              <div class="kicker">Repeat on</div>
+              <div class="days">
+                <span class="on">M</span><span class="on">T</span><span class="on">W</span><span class="on">T</span><span class="on">F</span><span>S</span><span>S</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="kicker">Reminder</div>
+              <div class="seg" style="grid-template-columns:repeat(3,1fr);">
+                <div class="on">Adaptive</div><div>Fixed time</div><div>Off</div>
+              </div>
+            </div>
+
+            <div class="nudge">
+              <div class="kicker">While it learns</div>
+              <p>Nudging at <b>9:30 pm</b> until there's a week of history — then it adjusts to when you actually stretch.</p>
+            </div>
+
+            <div class="field">
+              <div class="kicker">Colour</div>
+              <div style="display:flex;gap:7px;">
+                <span style="width:20px;height:20px;border-radius:50%;background:var(--accent);border:2px solid var(--ink);"></span>
+                <span style="width:20px;height:20px;border-radius:50%;background:#5B7FA6;"></span>
+                <span style="width:20px;height:20px;border-radius:50%;background:#A6795B;"></span>
+                <span style="width:20px;height:20px;border-radius:50%;background:#8A6BA6;"></span>
+                <span style="width:20px;height:20px;border-radius:50%;background:#A65B6B;"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3><span class="slug">Editor</span> Add &amp; edit a habit</h3>
+        <ul>
+          <li>Type is chosen second, and <b>the fields below rewrite themselves</b> to match: Count asks for a number and a unit, Timed for a duration, Quit swaps "Daily target" for "What counts as a slip?".</li>
+          <li>Sensible defaults everywhere — a user can type a name, hit Save, and get a working daily yes/no habit. Everything else is optional refinement.</li>
+          <li class="sig">The reminder mode defaults to <b>Adaptive</b>, with the ochre card stating the fallback time in plain language. Nobody should have to wonder what happens on day one.</li>
+          <li>Colour, not icons. An icon picker is a hundred choices and a search field; five colours is one glance, and colour is what actually distinguishes rows in the widget.</li>
+          <li>Edit reuses this exact screen with values filled, plus <b>Archive</b> at the bottom. One screen, two jobs.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="spec">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+          <div class="body">
+            <div class="scr-title" style="padding-top:6px;">Stats</div>
+            <div class="seg" style="grid-template-columns:repeat(3,1fr);">
+              <div>Week</div><div class="on">Month</div><div>Year</div>
+            </div>
+
+            <div class="statgrid">
+              <div class="stat"><b>81%</b><span>Completion</span></div>
+              <div class="stat"><b>24</b><span>Perfect days</span></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div class="kicker">All habits · this year</div>
+              <div class="heat">
+                <i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i></i>
+                <i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l2"></i>
+                <i class="l3"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i>
+                <i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l1"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l1"></i>
+                <i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l1"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i>
+                <i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i>
+                <i class="l3"></i><i class="l3"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i class="l2"></i>
+                <i class="l3"></i><i class="l2"></i><i class="l3"></i><i class="l3"></i><i></i><i></i><i></i>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <div class="kicker">By habit</div>
+              <div style="display:flex;flex-direction:column;gap:7px;">
+                <div style="display:flex;flex-direction:column;gap:3px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;"><span>Morning walk</span><span class="hsub">94%</span></div>
+                  <div class="bar"><i style="width:94%"></i></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;"><span>No smoking</span><span class="hsub">88%</span></div>
+                  <div class="bar"><i style="width:88%"></i></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;"><span>Drink water</span><span class="hsub">72%</span></div>
+                  <div class="bar"><i style="width:72%"></i></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;">
+                  <div style="display:flex;justify-content:space-between;font-size:11px;"><span>Meditate</span><span class="hsub">45%</span></div>
+                  <div class="bar"><i style="width:45%"></i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><i></i>Today</div>
+            <div class="tab on"><i></i>Stats</div>
+            <div class="tab"><i></i>Settings</div>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3><span class="slug">Stats</span> The long view</h3>
+        <ul>
+          <li>Deliberately a <b>separate tab</b>. Numbers are motivating on Sunday evening and paralysing on Tuesday morning — the home screen stays free of them.</li>
+          <li>Two headline figures only. <b>Perfect days</b> is the more human of the two: "24 days this month I did everything" beats a percentage.</li>
+          <li>The year heatmap is the single moment of density in the app, and it earns it — a year of consistency in one image is genuinely moving.</li>
+          <li>Per-habit bars are sorted worst-last, so the habit that needs attention is the one your eye stops on.</li>
+          <li>Tap any habit bar to jump straight to its detail screen — stats should lead somewhere, not dead-end.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="spec">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+          <div class="body">
+            <div class="scr-title" style="padding-top:6px;">Settings</div>
+
+            <div style="display:flex;flex-direction:column;">
+              <div class="kicker" style="padding-bottom:4px;">Appearance</div>
+              <div class="srow"><em>Theme</em><span>Follow system</span></div>
+              <div class="srow"><em>Week starts on</em><span>Monday</span></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;">
+              <div class="kicker" style="padding-bottom:4px;">Reminders</div>
+              <div class="srow"><em>Notifications</em><div class="toggle"></div></div>
+              <div class="srow"><em>Adaptive timing</em><div class="toggle"></div></div>
+              <div class="srow"><em>Quiet hours</em><span>10:30 pm – 7:00 am</span></div>
+              <div class="srow"><em>Streak-at-risk nudge</em><div class="toggle"></div></div>
+            </div>
+
+            <div class="nudge">
+              <div class="kicker">Battery settings</div>
+              <p>Some phones delay reminders to save power. <b>Check exemption →</b></p>
+            </div>
+
+            <div style="display:flex;flex-direction:column;">
+              <div class="kicker" style="padding-bottom:4px;">Your data</div>
+              <div class="srow"><em>Export backup</em><span>.json</span></div>
+              <div class="srow"><em>Restore from file</em><span>›</span></div>
+              <div class="srow"><em>Delete everything</em><span>›</span></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;">
+              <div class="kicker" style="padding-bottom:4px;">About</div>
+              <div class="srow"><em>Version</em><span>1.0.0</span></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><i></i>Today</div>
+            <div class="tab"><i></i>Stats</div>
+            <div class="tab on"><i></i>Settings</div>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3><span class="slug">Settings</span> Short on purpose</h3>
+        <ul>
+          <li>Four groups, no search, no sub-pages beyond pickers. A settings screen that needs a search field is a design failure.</li>
+          <li><b>Quiet hours are global and respected absolutely.</b> An adaptive engine that fires at 5:40am because that's when you once went running would lose the user permanently.</li>
+          <li class="sig">The battery card only appears on manufacturers known to kill background alarms — Xiaomi, Oppo, Vivo, Samsung. It deep-links to the OEM's own exemption screen. <b>This one card prevents the top-rated bad review every offline reminder app receives.</b></li>
+          <li>Export writes a single JSON file through the system share sheet. With no cloud, a lost phone means lost history — so backup is a headline feature, not a footnote.</li>
+          <li>"Delete everything" is worded as the consequence, not the mechanism, and takes a typed confirmation.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- NOTIFICATION + WIDGET -->
+    <div class="spec">
+      <div class="device">
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><span>▮▮▮ ▰</span></div>
+          <div class="body" style="gap:14px;">
+            <div class="kicker" style="padding-top:6px;">Lock screen</div>
+
+            <div class="notif">
+              <div class="notif-head"><b></b> Cadence · now</div>
+              <div style="font-size:12px;font-weight:500;">Time for your morning walk</div>
+              <div style="font-size:10.5px;color:var(--muted);">You've done this 18 days running.</div>
+              <div class="notif-actions"><span>Done</span><span>Snooze 15m</span><span>Skip today</span></div>
+            </div>
+
+            <div class="notif">
+              <div class="notif-head"><b style="background:var(--signal);"></b> Cadence · 8:40 pm</div>
+              <div style="font-size:12px;font-weight:500;">2 habits left, and an 18-day streak riding on one</div>
+              <div style="font-size:10.5px;color:var(--muted);">Meditate · Read</div>
+              <div class="notif-actions"><span>Open</span><span>Not tonight</span></div>
+            </div>
+
+            <div class="kicker" style="padding-top:4px;">Home screen widget · 4×2</div>
+
+            <div style="border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:var(--ground);display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;">
+                <div style="font-family:var(--f-display);font-size:15px;font-weight:600;">4 of 7 today</div>
+                <div class="hsub">Sun 2 Aug</div>
+              </div>
+              <div class="bar" style="height:4px;"><i style="width:57%"></i></div>
+              <div style="display:flex;flex-direction:column;gap:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="width:14px;height:14px;border-radius:50%;background:var(--accent);display:grid;place-items:center;color:var(--card);font-size:8px;">✓</span>
+                  <span style="font-size:11px;color:var(--muted);text-decoration:line-through;">Morning walk</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="width:14px;height:14px;border-radius:50%;border:1.5px solid var(--line);"></span>
+                  <span style="font-size:11px;">Meditate</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span style="width:14px;height:14px;border-radius:50%;border:1.5px solid var(--line);"></span>
+                  <span style="font-size:11px;">Read · 6 of 20</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notes">
+        <h3><span class="slug">Outside</span> Notification &amp; widget</h3>
+        <ul>
+          <li><b>Done from the lock screen never opens the app.</b> The action writes straight to the database and the notification dismisses itself — logging a habit should cost one tap and zero seconds.</li>
+          <li>The streak count in the body isn't decoration; it's the reason to act, and it's the only place Cadence applies any pressure.</li>
+          <li class="sig">The second, ochre notification is the <b>streak-at-risk nudge</b> — fired once, in the evening, only when something with a streak of three or more is still undone. Never more than one per day, and switchable off.</li>
+          <li>"Not tonight" suppresses everything until tomorrow. An app that can't be told to be quiet gets uninstalled instead.</li>
+          <li>The widget is the same tap-to-complete surface as Home, minus navigation. For a lot of users this becomes the primary interface and the app itself is rarely opened — which is a success, not a problem.</li>
+          <li>Widgets are the one piece Flutter can't render: <b>native Kotlin (Glance) on Android, SwiftUI WidgetKit on iOS</b>, both reading a shared JSON snapshot the app rewrites on every change.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NAV MAP ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">Navigation</p>
+      <h2>Nothing is more than two taps deep</h2>
+    </div>
+    <div class="flow">
+      <div class="flow-inner">
+        <div class="flow-lane">
+          <span class="lane-lbl">First run</span>
+          <span class="node root">Promise</span><span class="arrow">→</span>
+          <span class="node">Pick habits</span><span class="arrow">→</span>
+          <span class="node">Allow reminders</span><span class="arrow">→</span>
+          <span class="node root">Today</span>
+        </div>
+        <div class="flow-lane">
+          <span class="lane-lbl">Tabs</span>
+          <span class="node root">Today</span><span class="arrow">·</span>
+          <span class="node">Stats</span><span class="arrow">·</span>
+          <span class="node">Settings</span>
+        </div>
+        <div class="flow-lane">
+          <span class="lane-lbl">From Today</span>
+          <span class="node">tap row</span><span class="arrow">→</span>
+          <span class="node">Habit detail</span><span class="arrow">→</span>
+          <span class="node">Editor</span>
+        </div>
+        <div class="flow-lane">
+          <span class="lane-lbl"></span>
+          <span class="node">tap +</span><span class="arrow">→</span>
+          <span class="node">Editor</span>
+          <span class="arrow" style="padding-left:1rem;">|</span>
+          <span class="node">long-press row</span><span class="arrow">→</span>
+          <span class="node">Backfill sheet</span>
+        </div>
+        <div class="flow-lane">
+          <span class="lane-lbl">Outside app</span>
+          <span class="node sig">Notification</span><span class="arrow">→</span>
+          <span class="node sig">writes to DB directly</span>
+          <span class="arrow" style="padding-left:1rem;">|</span>
+          <span class="node sig">Widget tap</span><span class="arrow">→</span>
+          <span class="node sig">writes to DB directly</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ADAPTIVE ENGINE ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">The hard part</p>
+      <h2>How the adaptive nudge works</h2>
+      <p>All of this runs on the phone, in Dart, on a nightly background pass. No model, no server, no telemetry — just arithmetic over your own timestamps.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><div class="step-body">
+        <b>Record the moment, not just the day</b>
+        <p>Every completion stores a full local timestamp. This is the only data collection the app does, and it never leaves the device.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>Wait for seven completions</b>
+        <p>Below that, the sample is noise. Until then the habit uses the fallback time set at creation, and the UI says so in plain words.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>Split weekdays from weekends</b>
+        <p>Two buckets, computed separately. Most people's Saturday bears no resemblance to their Tuesday, and averaging the two produces a time that suits neither.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>Take the median, not the mean</b>
+        <p>One 2am outlier would drag an average across the whole evening. The median shrugs it off.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>Check whether the habit actually has a rhythm</b>
+        <p>If the interquartile range exceeds three hours, this habit has no reliable time — so adaptive mode silently steps aside and the fixed time stands. Confidently wrong is worse than not trying.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>Schedule fifteen minutes early, then clamp</b>
+        <p>Nudge just before the usual moment, so it arrives as a prompt rather than a reproach. The result is then forced inside quiet hours — those always win.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>Cancel on completion</b>
+        <p>Finish the habit before the nudge fires and the pending notification is torn down. Being reminded to do something you've already done is the fastest way to lose trust.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>One evening sweep for streaks at risk</b>
+        <p>A single consolidated notification, at most once a day, naming what's outstanding and what streak is on the line. One per day is the hard ceiling.</p>
+      </div></div>
+      <div class="step"><div class="step-body">
+        <b>Recompute nightly, reschedule at 3am</b>
+        <p><code>workmanager</code> wakes, recalculates every habit's window, and re-arms the next 24 hours of alarms through <code>flutter_local_notifications</code>. Also re-armed on device boot and on app open, since background work on Android is never guaranteed.</p>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ============ DATA MODEL ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">Data model</p>
+      <h2>Four tables, one SQLite file</h2>
+      <p>Drift over SQLite — typed queries, reactive streams straight into the UI, and a schema that survives migration.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Table</th><th>Columns</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>habits</code></td>
+            <td class="mono">id · name · type · target_value · target_unit · colour · schedule_mask · reminder_mode · fallback_time · created_at · archived_at · sort_order</td>
+            <td><code>schedule_mask</code> is a 7-bit integer for the days of the week. <code>type</code> is one of yes_no, count, timed, quit.</td>
+          </tr>
+          <tr>
+            <td><code>habit_logs</code></td>
+            <td class="mono">id · habit_id · local_date · value · completed_at · source · note</td>
+            <td>One row per habit per day. <code>value</code> holds the count or seconds; yes/no stores 1. <code>source</code> records app, notification, or widget — useful later for tuning.</td>
+          </tr>
+          <tr>
+            <td><code>nudge_state</code></td>
+            <td class="mono">habit_id · learned_weekday_min · learned_weekend_min · sample_count · spread_min · confident · next_fire_at</td>
+            <td>The engine's cached output. Rewritten by the nightly pass; read by the scheduler and by the detail screen's ochre card.</td>
+          </tr>
+          <tr>
+            <td><code>settings</code></td>
+            <td class="mono">key · value</td>
+            <td>Plain key/value: theme, week start, quiet hours, adaptive on/off, streak-nudge on/off, onboarding done.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="padding-top:1rem;color:var(--ink-soft);font-size:0.9375rem;">Streaks are computed on read, never stored. A stored streak is a number that eventually disagrees with the logs behind it — and when they disagree, the user believes the number and loses faith in the app.</p>
+  </section>
+
+  <!-- ============ SAMPLE HABITS ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">Seed data</p>
+      <h2>The starter library</h2>
+      <p>Twelve habits offered at onboarding. The four marked <span class="type-tag" style="border-color:var(--accent);color:var(--accent);">pre-checked</span> arrive selected, and between them exercise all four habit types on first launch.</p>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Habit</th><th>Type</th><th>Target</th><th>Fallback nudge</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>Morning walk</td><td><span class="type-tag">Yes / no</span></td><td class="mono">—</td><td class="mono">7:30 am</td><td><span class="type-tag" style="border-color:var(--accent);color:var(--accent);">pre-checked</span></td></tr>
+          <tr><td>Drink water</td><td><span class="type-tag">Count</span></td><td class="mono">8 glasses</td><td class="mono">every 2h, 9–9</td><td><span class="type-tag" style="border-color:var(--accent);color:var(--accent);">pre-checked</span></td></tr>
+          <tr><td>Read</td><td><span class="type-tag">Count</span></td><td class="mono">20 pages</td><td class="mono">9:00 pm</td><td><span class="type-tag" style="border-color:var(--accent);color:var(--accent);">pre-checked</span></td></tr>
+          <tr><td>No smoking</td><td><span class="type-tag">Quit</span></td><td class="mono">0 slips</td><td class="mono">none</td><td><span class="type-tag" style="border-color:var(--accent);color:var(--accent);">pre-checked</span></td></tr>
+          <tr><td>Meditate</td><td><span class="type-tag">Timed</span></td><td class="mono">10 min</td><td class="mono">7:00 am</td><td></td></tr>
+          <tr><td>Evening stretch</td><td><span class="type-tag">Timed</span></td><td class="mono">5 min</td><td class="mono">9:30 pm</td><td></td></tr>
+          <tr><td>Study / deep work</td><td><span class="type-tag">Timed</span></td><td class="mono">60 min</td><td class="mono">10:00 am</td><td></td></tr>
+          <tr><td>Journal</td><td><span class="type-tag">Yes / no</span></td><td class="mono">—</td><td class="mono">9:45 pm</td><td></td></tr>
+          <tr><td>Sleep by 11 pm</td><td><span class="type-tag">Yes / no</span></td><td class="mono">—</td><td class="mono">10:30 pm</td><td></td></tr>
+          <tr><td>Take vitamins</td><td><span class="type-tag">Yes / no</span></td><td class="mono">—</td><td class="mono">8:30 am</td><td></td></tr>
+          <tr><td>No sugar</td><td><span class="type-tag">Quit</span></td><td class="mono">0 slips</td><td class="mono">none</td><td></td></tr>
+          <tr><td>No phone after 10</td><td><span class="type-tag">Quit</span></td><td class="mono">0 slips</td><td class="mono">10:00 pm</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ ROADMAP ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">Build order</p>
+      <h2>Six phases, Android first</h2>
+      <p>Each phase ends with something runnable on a real device. iOS is a port at the end, not a parallel track — it needs a Mac.</p>
+    </div>
+    <div class="phases">
+      <div class="phase">
+        <div class="num">PHASE 01</div>
+        <h3>Foundation</h3>
+        <ul><li>Flutter project, folder structure, lints</li><li>Drift schema + migrations</li><li>Design tokens, both themes</li><li>Riverpod wiring</li></ul>
+      </div>
+      <div class="phase">
+        <div class="num">PHASE 02</div>
+        <h3>Core loop</h3>
+        <ul><li>Today screen with the ring</li><li>All four habit-type rows</li><li>Add / edit / archive</li><li>Streak computation</li></ul>
+      </div>
+      <div class="phase">
+        <div class="num">PHASE 03</div>
+        <h3>Onboarding &amp; seeds</h3>
+        <ul><li>Three-step first run</li><li>Twelve-habit library</li><li>Permission ask, worded well</li><li>Backfill &amp; skip-day</li></ul>
+      </div>
+      <div class="phase">
+        <div class="num">PHASE 04</div>
+        <h3>Reminders</h3>
+        <ul><li>Local notifications + actions</li><li>Boot &amp; app-open re-arm</li><li>Adaptive engine + nightly job</li><li>Quiet hours, OEM battery card</li></ul>
+      </div>
+      <div class="phase">
+        <div class="num">PHASE 05</div>
+        <h3>Stats &amp; data</h3>
+        <ul><li>Heatmaps and per-habit bars</li><li>Insights ("best day")</li><li>JSON export / import</li><li>Delete everything</li></ul>
+      </div>
+      <div class="phase">
+        <div class="num">PHASE 06</div>
+        <h3>Widget, then iOS</h3>
+        <ul><li>Glance widget (Kotlin)</li><li>Shared snapshot file</li><li>Play Store build</li><li>iOS port + WidgetKit — on a Mac</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RISKS ============ -->
+  <section class="section">
+    <div class="section-head">
+      <p class="eyebrow">Known hazards</p>
+      <h2>What will actually bite us</h2>
+    </div>
+    <div class="risks">
+      <div class="risk">
+        <span class="lvl high">Highest risk</span>
+        <b>Android OEMs kill background alarms</b>
+        <p>Xiaomi, Oppo, Vivo and Samsung aggressively suspend apps, and a missed reminder is a one-star review. Mitigation: exact alarms where permitted, re-arm on boot and every app open, never rely on the nightly job alone, and surface the battery-exemption card on affected devices.</p>
+      </div>
+      <div class="risk">
+        <span class="lvl high">Highest risk</span>
+        <b>Android 13 and 14 permission changes</b>
+        <p><code>POST_NOTIFICATIONS</code> must be requested at runtime, and <code>SCHEDULE_EXACT_ALARM</code> is no longer granted freely. The app has to degrade gracefully to inexact alarms and tell the user what changed, rather than silently going quiet.</p>
+      </div>
+      <div class="risk">
+        <span class="lvl med">Worth planning for</span>
+        <b>Widgets are native work, twice</b>
+        <p>Flutter cannot draw a home-screen widget. Android needs Kotlin and Glance; iOS needs SwiftUI and WidgetKit. Budget it as its own phase and keep the shared snapshot format dead simple.</p>
+      </div>
+      <div class="risk">
+        <span class="lvl med">Worth planning for</span>
+        <b>iOS needs a Mac</b>
+        <p>The Dart code ports cleanly, but building, signing and shipping do not happen on Windows. Options: a borrowed Mac, a cloud Mac CI runner, or Codemagic. Decide before Phase 06, not during it.</p>
+      </div>
+      <div class="risk">
+        <span class="lvl med">Worth planning for</span>
+        <b>Adaptive timing can feel creepy or broken</b>
+        <p>An app that changes its own behaviour without explanation reads as malfunctioning. Every screen touching the engine states what it learned in a plain sentence, and switching to a fixed time is always one tap away.</p>
+      </div>
+      <div class="risk">
+        <span class="lvl med">Worth planning for</span>
+        <b>No cloud means data is one lost phone away from gone</b>
+        <p>Export must ship in v1, not v1.2, and the app should prompt for a backup after the first month of history accumulates.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">Cadence · concept wireframes v0.1 · everything here is open to change before a line of Dart is written.</p>
+
+</div>
+</div>
