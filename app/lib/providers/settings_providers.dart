@@ -11,6 +11,11 @@ const _kQuietStart = 'quiet_start_minutes'; // minutes since midnight
 const _kQuietEnd = 'quiet_end_minutes';
 const _kWeekStartsMonday = 'week_starts_monday';
 const _kGestureHintsDismissed = 'gesture_hints_dismissed';
+const _kUpdateCheckEnabled = 'update_check_enabled';
+const _kUpdateLastCheckedAt = 'update_last_checked_at';
+const _kUpdateLatestKnownVersion = 'update_latest_known_version';
+const _kUpdateLatestKnownUrl = 'update_latest_known_url';
+const _kUpdateDismissedVersion = 'update_dismissed_version';
 
 final onboardingDoneProvider = StreamProvider<bool>((ref) {
   return ref.watch(databaseProvider).watchSetting(_kOnboardingDone).map((v) => v == 'true');
@@ -61,6 +66,12 @@ final gestureHintsDismissedProvider = StreamProvider<bool>((ref) {
   return ref.watch(databaseProvider).watchSetting(_kGestureHintsDismissed).map((v) => v == 'true');
 });
 
+/// Off by default — checking GitHub for a new release is the app's only
+/// network call, so it stays opt-in rather than silently phoning home.
+final updateCheckEnabledProvider = StreamProvider<bool>((ref) {
+  return ref.watch(databaseProvider).watchSetting(_kUpdateCheckEnabled).map((v) => v == 'true');
+});
+
 class SettingsKeys {
   static const onboardingDone = _kOnboardingDone;
   static const themeMode = _kThemeMode;
@@ -71,4 +82,9 @@ class SettingsKeys {
   static const quietEnd = _kQuietEnd;
   static const weekStartsMonday = _kWeekStartsMonday;
   static const gestureHintsDismissed = _kGestureHintsDismissed;
+  static const updateCheckEnabled = _kUpdateCheckEnabled;
+  static const updateLastCheckedAt = _kUpdateLastCheckedAt;
+  static const updateLatestKnownVersion = _kUpdateLatestKnownVersion;
+  static const updateLatestKnownUrl = _kUpdateLatestKnownUrl;
+  static const updateDismissedVersion = _kUpdateDismissedVersion;
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -185,7 +186,31 @@ class SettingsScreen extends ConsumerWidget {
 
           const SizedBox(height: AppSpacing.xl),
           _SectionLabel('About', text: text),
-          _Row(label: 'Version', text: text, colors: colors, trailing: Text('1.0.0', style: text.mono)),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snap) {
+              return _Row(
+                label: 'Version',
+                text: text,
+                colors: colors,
+                trailing: Text(snap.data?.version ?? '—', style: text.mono),
+              );
+            },
+          ),
+          _SwitchRow(
+            label: 'Check for updates on GitHub',
+            value: ref.watch(updateCheckEnabledProvider).valueOrNull ?? false,
+            text: text,
+            colors: colors,
+            onChanged: (v) => db.setSetting(SettingsKeys.updateCheckEnabled, v.toString()),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              'The only network call this app ever makes — off by default. When on, it checks once a day at most.',
+              style: text.sub,
+            ),
+          ),
         ],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
@@ -13,6 +14,7 @@ import '../../providers/settings_providers.dart';
 import '../../data/models/habit_type.dart';
 import '../habit_detail/habit_detail_screen.dart';
 import '../habit_editor/habit_editor_screen.dart';
+import '../updates/update_provider.dart';
 import 'widgets/backfill_sheet.dart';
 import 'widgets/habit_row.dart';
 import 'widgets/progress_ring.dart';
@@ -32,6 +34,7 @@ class TodayScreen extends ConsumerWidget {
     final today = DateTime.now();
     final isToday = _isSameDay(selectedDate, today);
     final hintsDismissed = ref.watch(gestureHintsDismissedProvider).valueOrNull ?? true;
+    final update = ref.watch(latestUpdateProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -77,6 +80,22 @@ class TodayScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  if (update != null)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+                        child: _UpdateBanner(
+                          version: update.version,
+                          colors: colors,
+                          text: text,
+                          onOpen: () => launchUrl(Uri.parse(update.url), mode: LaunchMode.externalApplication),
+                          onDismiss: () {
+                            db.setSetting(SettingsKeys.updateDismissedVersion, update.version);
+                            ref.read(latestUpdateProvider.notifier).state = null;
+                          },
+                        ),
+                      ),
+                    ),
                   if (habits.isNotEmpty && !hintsDismissed)
                     SliverToBoxAdapter(
                       child: Padding(
@@ -208,6 +227,61 @@ class TodayScreen extends ConsumerWidget {
     if (picked != null) {
       ref.read(selectedDateProvider.notifier).state = DateTime(picked.year, picked.month, picked.day);
     }
+  }
+}
+
+/// Shown when an opted-in GitHub release check finds a newer version.
+class _UpdateBanner extends StatelessWidget {
+  const _UpdateBanner({
+    required this.version,
+    required this.colors,
+    required this.text,
+    required this.onOpen,
+    required this.onDismiss,
+  });
+  final String version;
+  final AppColors colors;
+  final AppText text;
+  final VoidCallback onOpen;
+  final VoidCallback onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.sm, AppSpacing.md),
+      decoration: BoxDecoration(
+        color: colors.accentDim,
+        border: Border.all(color: colors.accent.withValues(alpha: 0.5)),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('UPDATE AVAILABLE', style: text.kicker.copyWith(color: colors.accent)),
+                const SizedBox(height: 6),
+                Text('Cadence $version is out on GitHub.', style: text.bodySoft),
+                const SizedBox(height: 8),
+                GestureDetector(
+                  onTap: onOpen,
+                  child: Text('View release', style: text.body.copyWith(color: colors.accent, fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: onDismiss,
+            icon: Icon(Icons.close, size: 18, color: colors.accent),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            tooltip: 'Dismiss',
+          ),
+        ],
+      ),
+    );
   }
 }
 
