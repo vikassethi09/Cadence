@@ -8,6 +8,8 @@ import 'features/reminders/notification_nav.dart';
 import 'features/reminders/notification_service.dart';
 import 'features/reminders/reminder_scheduler.dart';
 import 'features/shell/app_shell.dart';
+import 'features/updates/update_checker.dart';
+import 'features/updates/update_provider.dart';
 import 'providers/database_provider.dart';
 import 'providers/settings_providers.dart';
 
@@ -72,6 +74,15 @@ class _AppRootState extends ConsumerState<_AppRoot> {
       });
     } catch (e, st) {
       debugPrint('Notification bootstrap failed, continuing without reminders: $e\n$st');
+    }
+
+    // Opt-in only, and any failure here (offline, GitHub unreachable) just
+    // means no banner shows — never a crash or visible error.
+    try {
+      final update = await checkForUpdate(ref.read(databaseProvider));
+      if (update != null) ref.read(latestUpdateProvider.notifier).state = update;
+    } catch (_) {
+      // Already handled inside checkForUpdate; this is a last-resort guard.
     }
   }
 
