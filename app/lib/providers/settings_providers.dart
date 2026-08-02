@@ -10,6 +10,7 @@ const _kStreakNudgeEnabled = 'streak_nudge_enabled';
 const _kQuietStart = 'quiet_start_minutes'; // minutes since midnight
 const _kQuietEnd = 'quiet_end_minutes';
 const _kWeekStartsMonday = 'week_starts_monday';
+const _kGestureHintsDismissed = 'gesture_hints_dismissed';
 
 final onboardingDoneProvider = StreamProvider<bool>((ref) {
   return ref.watch(databaseProvider).watchSetting(_kOnboardingDone).map((v) => v == 'true');
@@ -54,6 +55,12 @@ final weekStartsMondayProvider = StreamProvider<bool>((ref) {
   return ref.watch(databaseProvider).watchSetting(_kWeekStartsMonday).map((v) => v != 'false');
 });
 
+/// True once the user has dismissed the one-time Today-screen gesture hint
+/// (swipe to skip, long-press to backfill, drag to reorder).
+final gestureHintsDismissedProvider = StreamProvider<bool>((ref) {
+  return ref.watch(databaseProvider).watchSetting(_kGestureHintsDismissed).map((v) => v == 'true');
+});
+
 class SettingsKeys {
   static const onboardingDone = _kOnboardingDone;
   static const themeMode = _kThemeMode;
@@ -63,4 +70,5 @@ class SettingsKeys {
   static const quietStart = _kQuietStart;
   static const quietEnd = _kQuietEnd;
   static const weekStartsMonday = _kWeekStartsMonday;
+  static const gestureHintsDismissed = _kGestureHintsDismissed;
 }

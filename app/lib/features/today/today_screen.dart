@@ -9,6 +9,7 @@ import '../../core/utils/habit_logic.dart';
 import '../../data/db/database.dart';
 import '../../providers/database_provider.dart';
 import '../../providers/habit_providers.dart';
+import '../../providers/settings_providers.dart';
 import '../../data/models/habit_type.dart';
 import '../habit_detail/habit_detail_screen.dart';
 import '../habit_editor/habit_editor_screen.dart';
@@ -30,6 +31,7 @@ class TodayScreen extends ConsumerWidget {
     final db = ref.watch(databaseProvider);
     final today = DateTime.now();
     final isToday = _isSameDay(selectedDate, today);
+    final hintsDismissed = ref.watch(gestureHintsDismissedProvider).valueOrNull ?? true;
 
     return Scaffold(
       appBar: AppBar(
@@ -75,6 +77,17 @@ class TodayScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  if (habits.isNotEmpty && !hintsDismissed)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+                        child: _GestureHintBanner(
+                          colors: colors,
+                          text: text,
+                          onDismiss: () => db.setSetting(SettingsKeys.gestureHintsDismissed, 'true'),
+                        ),
+                      ),
+                    ),
                   if (habits.isEmpty)
                     SliverToBoxAdapter(
                       child: Padding(
@@ -195,6 +208,53 @@ class TodayScreen extends ConsumerWidget {
     if (picked != null) {
       ref.read(selectedDateProvider.notifier).state = DateTime(picked.year, picked.month, picked.day);
     }
+  }
+}
+
+/// One-time tip explaining the three row gestures that have no visible
+/// affordance otherwise: swipe to skip, long-press to backfill, and the
+/// drag handle to reorder. Dismissed permanently once closed.
+class _GestureHintBanner extends StatelessWidget {
+  const _GestureHintBanner({required this.colors, required this.text, required this.onDismiss});
+  final AppColors colors;
+  final AppText text;
+  final VoidCallback onDismiss;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.md, AppSpacing.sm, AppSpacing.md),
+      decoration: BoxDecoration(
+        color: colors.signalDim,
+        border: Border.all(color: colors.signal.withValues(alpha: 0.5)),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('A FEW GESTURES', style: text.kicker.copyWith(color: colors.signal)),
+                const SizedBox(height: 6),
+                Text(
+                  'Long-press a habit to fix up past days. Swipe left for a rest day, no streak lost. Drag the handle to reorder.',
+                  style: text.bodySoft,
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: onDismiss,
+            icon: Icon(Icons.close, size: 18, color: colors.signal),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+            tooltip: 'Dismiss',
+          ),
+        ],
+      ),
+    );
   }
 }
 
