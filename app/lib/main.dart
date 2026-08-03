@@ -67,6 +67,19 @@ class _AppRootState extends ConsumerState<_AppRoot> {
       // is never guaranteed, so this is the most reliable trigger available.
       await ReminderScheduler(db).rescheduleAll();
 
+      // Safety net: a plain (non-foreground-service) notification normally
+      // survives the app process dying, but re-post it on every launch in
+      // case an OEM's aggressive cleanup swept it anyway — cheap and
+      // idempotent either way.
+      final runningTimers = await (db.select(db.habits)..where((h) => h.runningTimerStartedAt.isNotNull())).get();
+      for (final habit in runningTimers) {
+        await NotificationService.instance.showRunningTimerNotification(
+          habitId: habit.id,
+          habitName: habit.name,
+          startedAt: habit.runningTimerStartedAt!,
+        );
+      }
+
       // If the app was cold-started by tapping a notification body, wait for
       // the first frame so the Navigator exists, then jump to that habit.
       WidgetsBinding.instance.addPostFrameCallback((_) {
