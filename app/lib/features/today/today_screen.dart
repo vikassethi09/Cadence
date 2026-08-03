@@ -158,16 +158,7 @@ class TodayScreen extends ConsumerWidget {
                                             !HabitLogic.isDone(habit, log),
                                           ),
                                           onIncrement: () => db.adjustCount(habit.id, selectedDate, 1),
-                                          onStartTimer: () async {
-                                            final added = await showTimerSheet(
-                                              context,
-                                              habit: habit,
-                                              alreadyLogged: log?.value ?? 0,
-                                            );
-                                            if (added != null && added > 0) {
-                                              await db.logTimedSeconds(habit.id, selectedDate, added);
-                                            }
-                                          },
+                                          onStartTimer: () => showTimerSheet(context, db: db, habit: habit, date: selectedDate),
                                           onOpenDetail: () => Navigator.of(context).push(
                                             MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: habit.id)),
                                           ),
