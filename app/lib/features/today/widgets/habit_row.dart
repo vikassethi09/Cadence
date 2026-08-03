@@ -227,7 +227,9 @@ class _TrailingAction extends StatelessWidget {
       case HabitType.count:
         return _Pill(label: '+1', solid: true, onTap: onIncrement, colors: colors, text: text);
       case HabitType.timed:
-        return _Pill(label: done ? 'Done' : 'Start', solid: done, onTap: onStartTimer, colors: colors, text: text);
+        final running = habit.runningTimerStartedAt != null;
+        final label = done ? 'Done' : (running ? 'Running' : 'Start');
+        return _Pill(label: label, solid: done || running, onTap: onStartTimer, colors: colors, text: text);
       case HabitType.yesNo:
       case HabitType.quit:
         return const SizedBox.shrink();

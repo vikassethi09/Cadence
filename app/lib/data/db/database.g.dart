@@ -174,6 +174,17 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _runningTimerStartedAtMeta =
+      const VerificationMeta('runningTimerStartedAt');
+  @override
+  late final GeneratedColumn<DateTime> runningTimerStartedAt =
+      GeneratedColumn<DateTime>(
+        'running_timer_started_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -191,6 +202,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     createdAt,
     archivedAt,
     sortOrder,
+    runningTimerStartedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -318,6 +330,15 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
       );
     }
+    if (data.containsKey('running_timer_started_at')) {
+      context.handle(
+        _runningTimerStartedAtMeta,
+        runningTimerStartedAt.isAcceptableOrUnknown(
+          data['running_timer_started_at']!,
+          _runningTimerStartedAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -387,6 +408,10 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         DriftSqlType.int,
         data['${effectivePrefix}sort_order'],
       )!,
+      runningTimerStartedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}running_timer_started_at'],
+      ),
     );
   }
 
@@ -431,6 +456,13 @@ class Habit extends DataClass implements Insertable<Habit> {
   final DateTime createdAt;
   final DateTime? archivedAt;
   final int sortOrder;
+
+  /// Set while a timed habit's timer is running. Elapsed time is always
+  /// computed as `now - runningTimerStartedAt`, never counted by ticks, so
+  /// the timer survives the screen locking, the app backgrounding, or the
+  /// sheet being closed — nothing needs to keep running in the foreground
+  /// for the elapsed time to stay correct.
+  final DateTime? runningTimerStartedAt;
   const Habit({
     required this.id,
     required this.name,
@@ -447,6 +479,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     required this.createdAt,
     this.archivedAt,
     required this.sortOrder,
+    this.runningTimerStartedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -480,6 +513,11 @@ class Habit extends DataClass implements Insertable<Habit> {
       map['archived_at'] = Variable<DateTime>(archivedAt);
     }
     map['sort_order'] = Variable<int>(sortOrder);
+    if (!nullToAbsent || runningTimerStartedAt != null) {
+      map['running_timer_started_at'] = Variable<DateTime>(
+        runningTimerStartedAt,
+      );
+    }
     return map;
   }
 
@@ -514,6 +552,9 @@ class Habit extends DataClass implements Insertable<Habit> {
           ? const Value.absent()
           : Value(archivedAt),
       sortOrder: Value(sortOrder),
+      runningTimerStartedAt: runningTimerStartedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(runningTimerStartedAt),
     );
   }
 
@@ -542,6 +583,9 @@ class Habit extends DataClass implements Insertable<Habit> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
       sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      runningTimerStartedAt: serializer.fromJson<DateTime?>(
+        json['runningTimerStartedAt'],
+      ),
     );
   }
   @override
@@ -563,6 +607,9 @@ class Habit extends DataClass implements Insertable<Habit> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'archivedAt': serializer.toJson<DateTime?>(archivedAt),
       'sortOrder': serializer.toJson<int>(sortOrder),
+      'runningTimerStartedAt': serializer.toJson<DateTime?>(
+        runningTimerStartedAt,
+      ),
     };
   }
 
@@ -582,6 +629,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     DateTime? createdAt,
     Value<DateTime?> archivedAt = const Value.absent(),
     int? sortOrder,
+    Value<DateTime?> runningTimerStartedAt = const Value.absent(),
   }) => Habit(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -606,6 +654,9 @@ class Habit extends DataClass implements Insertable<Habit> {
     createdAt: createdAt ?? this.createdAt,
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
     sortOrder: sortOrder ?? this.sortOrder,
+    runningTimerStartedAt: runningTimerStartedAt.present
+        ? runningTimerStartedAt.value
+        : this.runningTimerStartedAt,
   );
   Habit copyWithCompanion(HabitsCompanion data) {
     return Habit(
@@ -642,6 +693,9 @@ class Habit extends DataClass implements Insertable<Habit> {
           ? data.archivedAt.value
           : this.archivedAt,
       sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      runningTimerStartedAt: data.runningTimerStartedAt.present
+          ? data.runningTimerStartedAt.value
+          : this.runningTimerStartedAt,
     );
   }
 
@@ -662,7 +716,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           ..write('intervalEndMinutes: $intervalEndMinutes, ')
           ..write('createdAt: $createdAt, ')
           ..write('archivedAt: $archivedAt, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('runningTimerStartedAt: $runningTimerStartedAt')
           ..write(')'))
         .toString();
   }
@@ -684,6 +739,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     createdAt,
     archivedAt,
     sortOrder,
+    runningTimerStartedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -703,7 +759,8 @@ class Habit extends DataClass implements Insertable<Habit> {
           other.intervalEndMinutes == this.intervalEndMinutes &&
           other.createdAt == this.createdAt &&
           other.archivedAt == this.archivedAt &&
-          other.sortOrder == this.sortOrder);
+          other.sortOrder == this.sortOrder &&
+          other.runningTimerStartedAt == this.runningTimerStartedAt);
 }
 
 class HabitsCompanion extends UpdateCompanion<Habit> {
@@ -722,6 +779,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   final Value<DateTime> createdAt;
   final Value<DateTime?> archivedAt;
   final Value<int> sortOrder;
+  final Value<DateTime?> runningTimerStartedAt;
   const HabitsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -738,6 +796,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     this.createdAt = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.runningTimerStartedAt = const Value.absent(),
   });
   HabitsCompanion.insert({
     this.id = const Value.absent(),
@@ -755,6 +814,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     this.createdAt = const Value.absent(),
     this.archivedAt = const Value.absent(),
     this.sortOrder = const Value.absent(),
+    this.runningTimerStartedAt = const Value.absent(),
   }) : name = Value(name),
        type = Value(type),
        colour = Value(colour);
@@ -774,6 +834,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Expression<DateTime>? createdAt,
     Expression<DateTime>? archivedAt,
     Expression<int>? sortOrder,
+    Expression<DateTime>? runningTimerStartedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -794,6 +855,8 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       if (createdAt != null) 'created_at': createdAt,
       if (archivedAt != null) 'archived_at': archivedAt,
       if (sortOrder != null) 'sort_order': sortOrder,
+      if (runningTimerStartedAt != null)
+        'running_timer_started_at': runningTimerStartedAt,
     });
   }
 
@@ -813,6 +876,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     Value<DateTime>? createdAt,
     Value<DateTime?>? archivedAt,
     Value<int>? sortOrder,
+    Value<DateTime?>? runningTimerStartedAt,
   }) {
     return HabitsCompanion(
       id: id ?? this.id,
@@ -830,6 +894,8 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
       createdAt: createdAt ?? this.createdAt,
       archivedAt: archivedAt ?? this.archivedAt,
       sortOrder: sortOrder ?? this.sortOrder,
+      runningTimerStartedAt:
+          runningTimerStartedAt ?? this.runningTimerStartedAt,
     );
   }
 
@@ -881,6 +947,11 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     if (sortOrder.present) {
       map['sort_order'] = Variable<int>(sortOrder.value);
     }
+    if (runningTimerStartedAt.present) {
+      map['running_timer_started_at'] = Variable<DateTime>(
+        runningTimerStartedAt.value,
+      );
+    }
     return map;
   }
 
@@ -901,7 +972,8 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
           ..write('intervalEndMinutes: $intervalEndMinutes, ')
           ..write('createdAt: $createdAt, ')
           ..write('archivedAt: $archivedAt, ')
-          ..write('sortOrder: $sortOrder')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('runningTimerStartedAt: $runningTimerStartedAt')
           ..write(')'))
         .toString();
   }
@@ -2159,6 +2231,7 @@ typedef $$HabitsTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime?> archivedAt,
       Value<int> sortOrder,
+      Value<DateTime?> runningTimerStartedAt,
     });
 typedef $$HabitsTableUpdateCompanionBuilder =
     HabitsCompanion Function({
@@ -2177,6 +2250,7 @@ typedef $$HabitsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime?> archivedAt,
       Value<int> sortOrder,
+      Value<DateTime?> runningTimerStartedAt,
     });
 
 final class $$HabitsTableReferences
@@ -2301,6 +2375,11 @@ class $$HabitsTableFilterComposer
 
   ColumnFilters<int> get sortOrder => $composableBuilder(
     column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get runningTimerStartedAt => $composableBuilder(
+    column: $table.runningTimerStartedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2438,6 +2517,11 @@ class $$HabitsTableOrderingComposer
     column: $table.sortOrder,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get runningTimerStartedAt => $composableBuilder(
+    column: $table.runningTimerStartedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$HabitsTableAnnotationComposer
@@ -2511,6 +2595,11 @@ class $$HabitsTableAnnotationComposer
 
   GeneratedColumn<int> get sortOrder =>
       $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get runningTimerStartedAt => $composableBuilder(
+    column: $table.runningTimerStartedAt,
+    builder: (column) => column,
+  );
 
   Expression<T> habitLogsRefs<T extends Object>(
     Expression<T> Function($$HabitLogsTableAnnotationComposer a) f,
@@ -2606,6 +2695,7 @@ class $$HabitsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<DateTime?> runningTimerStartedAt = const Value.absent(),
               }) => HabitsCompanion(
                 id: id,
                 name: name,
@@ -2622,6 +2712,7 @@ class $$HabitsTableTableManager
                 createdAt: createdAt,
                 archivedAt: archivedAt,
                 sortOrder: sortOrder,
+                runningTimerStartedAt: runningTimerStartedAt,
               ),
           createCompanionCallback:
               ({
@@ -2640,6 +2731,7 @@ class $$HabitsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
                 Value<int> sortOrder = const Value.absent(),
+                Value<DateTime?> runningTimerStartedAt = const Value.absent(),
               }) => HabitsCompanion.insert(
                 id: id,
                 name: name,
@@ -2656,6 +2748,7 @@ class $$HabitsTableTableManager
                 createdAt: createdAt,
                 archivedAt: archivedAt,
                 sortOrder: sortOrder,
+                runningTimerStartedAt: runningTimerStartedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map(

@@ -38,6 +38,13 @@ class Habits extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get archivedAt => dateTime().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  /// Set while a timed habit's timer is running. Elapsed time is always
+  /// computed as `now - runningTimerStartedAt`, never counted by ticks, so
+  /// the timer survives the screen locking, the app backgrounding, or the
+  /// sheet being closed — nothing needs to keep running in the foreground
+  /// for the elapsed time to stay correct.
+  DateTimeColumn get runningTimerStartedAt => dateTime().nullable()();
 }
 
 /// One row per habit per day it has activity. For yesNo/count/timed habits,

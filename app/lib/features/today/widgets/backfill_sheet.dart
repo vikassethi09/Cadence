@@ -31,7 +31,9 @@ class _BackfillSheet extends StatelessWidget {
     final colors = AppColorsScope.of(context);
     final text = AppText(colors);
     final today = DateTime.now();
-    final isQuit = HabitLogic.typeOf(habit) == HabitType.quit;
+    final type = HabitLogic.typeOf(habit);
+    final isQuit = type == HabitType.quit;
+    final isNumeric = type == HabitType.count || type == HabitType.timed;
 
     return Container(
       constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.75),
@@ -59,7 +61,11 @@ class _BackfillSheet extends StatelessWidget {
                     Text(habit.name, style: text.h2),
                     const SizedBox(height: 4),
                     Text(
-                      isQuit ? 'Tap a day to mark or clear a slip.' : 'Tap a day to fill in or clear it.',
+                      isQuit
+                          ? 'Tap a day to mark or clear a slip.'
+                          : isNumeric
+                              ? 'Tap a day to enter or fix its exact value.'
+                              : 'Tap a day to fill in or clear it.',
                       style: text.sub,
                     ),
                   ],
@@ -79,6 +85,7 @@ class _BackfillSheet extends StatelessWidget {
                     final scheduled = HabitLogic.isScheduledOn(habit, date);
                     final done = HabitLogic.isDone(habit, log);
                     final skipped = HabitLogic.isSkipped(log);
+                    final value = log?.value ?? 0;
 
                     return _DayRow(
                       date: date,
@@ -86,6 +93,7 @@ class _BackfillSheet extends StatelessWidget {
                       scheduled: scheduled,
                       done: done,
                       skipped: skipped,
+                      valueLabel: isNumeric && scheduled && !skipped ? _valueLabel(type, habit, value) : null,
                       colors: colors,
                       text: text,
                       onTap: !scheduled
@@ -93,6 +101,16 @@ class _BackfillSheet extends StatelessWidget {
                           : () async {
                               if (isQuit) {
                                 await db.setSlip(habit.id, date, !done);
+                              } else if (isNumeric) {
+                                final entered = await _showEditValueDialog(
+                                  context,
+                                  type: type,
+                                  habit: habit,
+                                  initialSeconds: value,
+                                );
+                                if (entered != null) {
+                                  await db.setExactValue(habit.id, date, entered);
+                                }
                               } else if (done) {
                                 await db.unmarkDone(habit.id, date);
                               } else {
@@ -110,6 +128,52 @@ class _BackfillSheet extends StatelessWidget {
       ),
     );
   }
+
+  String _valueLabel(HabitType type, Habit habit, int value) {
+    final target = habit.targetValue ?? 1;
+    if (type == HabitType.timed) {
+      return '${value ~/ 60}/${target ~/ 60} min';
+    }
+    return '$value/$target ${habit.targetUnit ?? ''}'.trim();
+  }
+
+  Future<int?> _showEditValueDialog(
+    BuildContext context, {
+    required HabitType type,
+    required Habit habit,
+    required int initialSeconds,
+  }) async {
+    final isTimed = type == HabitType.timed;
+    final initial = isTimed ? initialSeconds ~/ 60 : initialSeconds;
+    final controller = TextEditingController(text: initial == 0 ? '' : initial.toString());
+    final colors = AppColorsScope.of(context);
+    final unit = isTimed ? 'minutes' : (habit.targetUnit?.isNotEmpty == true ? habit.targetUnit! : 'count');
+
+    final result = await showDialog<int>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: colors.card,
+        title: Text('${habit.name} — $unit'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(hintText: 'e.g. ${habit.targetValue != null && isTimed ? habit.targetValue! ~/ 60 : habit.targetValue ?? 0}'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () {
+              final raw = int.tryParse(controller.text.trim()) ?? 0;
+              Navigator.of(context).pop(isTimed ? raw * 60 : raw);
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    return result;
+  }
 }
 
 class _DayRow extends StatelessWidget {
@@ -122,6 +186,7 @@ class _DayRow extends StatelessWidget {
     required this.colors,
     required this.text,
     required this.onTap,
+    this.valueLabel,
   });
 
   final DateTime date;
@@ -132,6 +197,10 @@ class _DayRow extends StatelessWidget {
   final AppColors colors;
   final AppText text;
   final VoidCallback? onTap;
+
+  /// When set (count/timed habits), shows the exact logged value instead of
+  /// a plain done/not-done circle — tapping opens an editable value dialog.
+  final String? valueLabel;
 
   static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   static const _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -157,6 +226,8 @@ class _DayRow extends StatelessWidget {
               Text('Not scheduled', style: text.sub)
             else if (skipped)
               Text('Skipped', style: text.sub.copyWith(fontStyle: FontStyle.italic))
+            else if (valueLabel != null)
+              Text(valueLabel!, style: text.body.copyWith(color: done ? colors.accent : colors.inkSoft, fontWeight: FontWeight.w500))
             else
               Container(
                 width: 24,

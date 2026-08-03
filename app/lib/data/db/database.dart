@@ -17,7 +17,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.e);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -30,6 +30,9 @@ class AppDatabase extends _$AppDatabase {
             await m.addColumn(habits, habits.intervalMinutes);
             await m.addColumn(habits, habits.intervalStartMinutes);
             await m.addColumn(habits, habits.intervalEndMinutes);
+          }
+          if (from < 4) {
+            await m.addColumn(habits, habits.runningTimerStartedAt);
           }
         },
       );
@@ -156,6 +159,50 @@ class AppDatabase extends _$AppDatabase {
   /// once total seconds for the day meets the habit's target).
   Future<void> logTimedSeconds(int habitId, DateTime date, int seconds, {LogSourceArg source = LogSourceArg.app}) =>
       adjustCount(habitId, date, seconds, source: source);
+
+  /// Sets a count/timed habit's logged value for [date] to an exact number,
+  /// rather than adding a delta — used to fix up a specific past day from
+  /// the backfill sheet. Clears any skip marker, matching adjustCount.
+  Future<void> setExactValue(int habitId, DateTime date, int value, {LogSourceArg source = LogSourceArg.app}) async {
+    final existing = await logForHabitAndDate(habitId, date);
+    final clamped = value.clamp(0, 1 << 30);
+    if (existing == null) {
+      if (clamped <= 0) return;
+      await into(habitLogs).insert(HabitLogsCompanion.insert(
+        habitId: habitId,
+        localDate: dateOnly(date),
+        value: Value(clamped),
+        completedAt: Value(DateTime.now()),
+        source: Value(source.index),
+      ));
+    } else if (clamped == 0 && !existing.skipped) {
+      await (delete(habitLogs)..where((l) => l.id.equals(existing.id))).go();
+    } else {
+      await (update(habitLogs)..where((l) => l.id.equals(existing.id))).write(
+        HabitLogsCompanion(value: Value(clamped), completedAt: Value(DateTime.now()), skipped: const Value(false)),
+      );
+    }
+  }
+
+  /// Starts a timed habit's timer, persisting the wall-clock start time so
+  /// it survives the screen locking, the app backgrounding, or the sheet
+  /// being closed without pausing.
+  Future<void> startRunningTimer(int habitId) => (update(habits)..where((h) => h.id.equals(habitId)))
+      .write(HabitsCompanion(runningTimerStartedAt: Value(DateTime.now())));
+
+  /// Pauses [habitId]'s running timer (if any), committing the elapsed wall
+  /// time into today's log and clearing the start marker.
+  Future<void> pauseRunningTimer(int habitId, DateTime date, {LogSourceArg source = LogSourceArg.app}) async {
+    final habit = await getHabit(habitId);
+    final startedAt = habit?.runningTimerStartedAt;
+    if (startedAt == null) return;
+    final elapsedSeconds = DateTime.now().difference(startedAt).inSeconds;
+    if (elapsedSeconds > 0) {
+      await adjustCount(habitId, date, elapsedSeconds, source: source);
+    }
+    await (update(habits)..where((h) => h.id.equals(habitId)))
+        .write(const HabitsCompanion(runningTimerStartedAt: Value(null)));
+  }
 
   /// Marks a slip for a quit habit. Removing the row un-marks it.
   Future<void> setSlip(int habitId, DateTime date, bool slipped) =>
