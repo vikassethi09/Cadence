@@ -66,13 +66,16 @@ class NotificationService {
     return (androidGranted ?? true) && (iosGranted ?? true);
   }
 
-  /// Id space per habit: habitId*1000 + weekday(0-6) for single-time
-  /// reminders, habitId*1000 + 100 + weekday*10 + slot(0-9) for interval
-  /// reminders. Both fit well clear of the snooze/sweep id ranges below.
+  /// Id space per habit: habitId*10000 + weekday(0-6) for single-time
+  /// reminders, habitId*10000 + 100 + weekday*10 + slot(0-9) for interval
+  /// reminders (range 100-179). Snooze and timer ids live at fixed bases
+  /// far above any realistic habitId*10000 range (habitId would need to
+  /// reach ~100,000 to collide), so growth in habit count over the app's
+  /// lifetime can't cross into their space.
   static const _maxIntervalSlotsPerDay = 10;
-  int _idFor(int habitId, int weekdayIndex) => habitId * 1000 + weekdayIndex;
+  int _idFor(int habitId, int weekdayIndex) => habitId * 10000 + weekdayIndex;
   int _intervalIdFor(int habitId, int weekdayIndex, int slotIndex) =>
-      habitId * 1000 + 100 + weekdayIndex * 10 + slotIndex;
+      habitId * 10000 + 100 + weekdayIndex * 10 + slotIndex;
 
   /// Cancels any existing reminders for [habitId] then schedules a fresh
   /// weekly notification for each active weekday in [scheduleMask] at
@@ -193,8 +196,8 @@ class NotificationService {
     );
   }
 
-  int _snoozeIdFor(int habitId) => 1000000 + habitId;
-  int _timerIdFor(int habitId) => 2000000 + habitId;
+  int _snoozeIdFor(int habitId) => 1000000000 + habitId;
+  int _timerIdFor(int habitId) => 1100000000 + habitId;
 
   /// Shows an ongoing, OS-rendered stopwatch notification for a running
   /// timed habit. The ticking digits are drawn and updated by Android

@@ -158,7 +158,13 @@ class TodayScreen extends ConsumerWidget {
                                             !HabitLogic.isDone(habit, log),
                                           ),
                                           onIncrement: () => db.adjustCount(habit.id, selectedDate, 1),
-                                          onStartTimer: () => showTimerSheet(context, db: db, habit: habit, date: selectedDate),
+                                          // A live timer only ever means "right now" — starting one while
+                                          // looking at a past day would log real elapsed time against that
+                                          // day, which makes no sense. Past days go through the same
+                                          // exact-value editor the backfill sheet already provides.
+                                          onStartTimer: () => isToday
+                                              ? showTimerSheet(context, db: db, habit: habit, date: selectedDate)
+                                              : showBackfillSheet(context, db: db, habit: habit),
                                           onOpenDetail: () => Navigator.of(context).push(
                                             MaterialPageRoute(builder: (_) => HabitDetailScreen(habitId: habit.id)),
                                           ),

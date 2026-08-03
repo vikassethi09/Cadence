@@ -19,7 +19,7 @@ class BackupService {
     final logs = await db.select(db.habitLogs).get();
 
     final payload = {
-      'version': 1,
+      'version': 2,
       'exportedAt': DateTime.now().toIso8601String(),
       'habits': habits
           .map((h) => {
@@ -32,6 +32,9 @@ class BackupService {
                 'scheduleMask': h.scheduleMask,
                 'reminderMode': h.reminderMode,
                 'fallbackTimeMinutes': h.fallbackTimeMinutes,
+                'intervalMinutes': h.intervalMinutes,
+                'intervalStartMinutes': h.intervalStartMinutes,
+                'intervalEndMinutes': h.intervalEndMinutes,
                 'createdAt': h.createdAt.toIso8601String(),
                 'archivedAt': h.archivedAt?.toIso8601String(),
                 'sortOrder': h.sortOrder,
@@ -45,6 +48,7 @@ class BackupService {
                 'completedAt': l.completedAt.toIso8601String(),
                 'source': l.source,
                 'note': l.note,
+                'skipped': l.skipped,
               })
           .toList(),
     };
@@ -80,6 +84,11 @@ class BackupService {
         scheduleMask: Value(h['scheduleMask'] as int? ?? 127),
         reminderMode: Value(h['reminderMode'] as int? ?? 0),
         fallbackTimeMinutes: Value(h['fallbackTimeMinutes'] as int?),
+        // Absent on backups made before interval reminders existed —
+        // falls back to null, same as a habit that never had one set.
+        intervalMinutes: Value(h['intervalMinutes'] as int?),
+        intervalStartMinutes: Value(h['intervalStartMinutes'] as int?),
+        intervalEndMinutes: Value(h['intervalEndMinutes'] as int?),
         createdAt: Value(DateTime.parse(h['createdAt'] as String)),
         archivedAt: Value(h['archivedAt'] != null ? DateTime.parse(h['archivedAt'] as String) : null),
         sortOrder: Value(h['sortOrder'] as int? ?? 0),
@@ -98,6 +107,9 @@ class BackupService {
             completedAt: Value(DateTime.parse(l['completedAt'] as String)),
             source: Value(l['source'] as int? ?? 0),
             note: Value(l['note'] as String?),
+            // Absent on backups made before rest days existed — defaults to
+            // an ordinary (non-skipped) log, same as it would have been then.
+            skipped: Value(l['skipped'] as bool? ?? false),
           ));
     }
   }

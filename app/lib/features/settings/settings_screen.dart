@@ -290,7 +290,7 @@ class _Row extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(label, style: text.body.copyWith(color: labelColor ?? colors.ink)),
-            if (trailing != null) trailing!,
+            ?trailing,
           ],
         ),
       ),
