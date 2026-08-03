@@ -17,6 +17,7 @@ class NotificationService {
 
   static const _channelId = 'cadence_reminders';
   static const _streakChannelId = 'cadence_streak';
+  static const _timerChannelId = 'cadence_timer';
 
   Future<void> init() async {
     if (_initialized) return;
@@ -46,6 +47,12 @@ class NotificationService {
       'Streak at risk',
       description: 'One evening nudge when a streak is still undone',
       importance: Importance.high,
+    ));
+    await androidImpl?.createNotificationChannel(const AndroidNotificationChannel(
+      _timerChannelId,
+      'Active timer',
+      description: 'Shows while a timed habit is running, so it stays visible on the lock screen',
+      importance: Importance.low,
     ));
 
     _initialized = true;
@@ -187,6 +194,41 @@ class NotificationService {
   }
 
   int _snoozeIdFor(int habitId) => 1000000 + habitId;
+  int _timerIdFor(int habitId) => 2000000 + habitId;
+
+  /// Shows an ongoing, OS-rendered stopwatch notification for a running
+  /// timed habit. The ticking digits are drawn and updated by Android
+  /// itself from [startedAt] — the app doesn't repost this every second, so
+  /// it stays correct through the screen locking, Doze, or the app process
+  /// being killed outright. Only a real Pause (in-app or from the
+  /// notification's action) removes it.
+  Future<void> showRunningTimerNotification({
+    required int habitId,
+    required String habitName,
+    required DateTime startedAt,
+  }) async {
+    await _plugin.show(
+      id: _timerIdFor(habitId),
+      title: habitName,
+      body: 'Timer running',
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          _timerChannelId,
+          'Active timer',
+          category: AndroidNotificationCategory.stopwatch,
+          visibility: NotificationVisibility.public,
+          ongoing: true,
+          autoCancel: false,
+          usesChronometer: true,
+          when: startedAt.millisecondsSinceEpoch,
+          actions: const [AndroidNotificationAction('pause_timer', 'Pause', showsUserInterface: false)],
+        ),
+      ),
+      payload: 'timer:$habitId',
+    );
+  }
+
+  Future<void> cancelRunningTimerNotification(int habitId) => _plugin.cancel(id: _timerIdFor(habitId));
 
   Future<void> cancelForHabit(int habitId) async {
     for (var i = 0; i < 7; i++) {

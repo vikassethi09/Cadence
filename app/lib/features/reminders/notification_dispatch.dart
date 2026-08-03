@@ -12,7 +12,13 @@ import 'notification_service.dart';
 /// through Riverpod, which doesn't exist in that isolate.
 Future<void> handleNotificationResponse(NotificationResponse response) async {
   final payload = response.payload;
-  if (payload == null || !payload.startsWith('habit:')) return;
+  if (payload == null) return;
+
+  if (payload.startsWith('timer:')) {
+    await _handleTimerResponse(payload.substring('timer:'.length), response.actionId);
+    return;
+  }
+  if (!payload.startsWith('habit:')) return;
   final habitId = int.tryParse(payload.substring('habit:'.length));
   if (habitId == null) return;
 
@@ -40,6 +46,28 @@ Future<void> handleNotificationResponse(NotificationResponse response) async {
     }
   } finally {
     await db.close();
+  }
+}
+
+/// Handles a tap on the running-timer notification, either its "Pause"
+/// action or a plain tap on the body (opens the habit).
+Future<void> _handleTimerResponse(String habitIdRaw, String? actionId) async {
+  final habitId = int.tryParse(habitIdRaw);
+  if (habitId == null) return;
+
+  if (actionId == null) {
+    NotificationNav.openHabit(habitId);
+    return;
+  }
+
+  if (actionId == 'pause_timer') {
+    final db = AppDatabase();
+    try {
+      await db.pauseRunningTimer(habitId, DateTime.now(), source: LogSourceArg.notification);
+    } finally {
+      await db.close();
+    }
+    await NotificationService.instance.cancelRunningTimerNotification(habitId);
   }
 }
 

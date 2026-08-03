@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../core/theme/app_text.dart';
 import '../../../data/db/database.dart';
+import '../../reminders/notification_service.dart';
 
 /// Opens the timer sheet for [habit]. The timer itself lives in the
 /// database (a start timestamp, not a running clock in memory), so closing
@@ -59,6 +60,7 @@ class _TimerSheetState extends State<_TimerSheet> {
   Future<void> _toggle() async {
     if (_habit.runningTimerStartedAt != null) {
       await widget.db.pauseRunningTimer(_habit.id, widget.date);
+      await NotificationService.instance.cancelRunningTimerNotification(_habit.id);
       _uiTicker?.cancel();
       final refreshed = await widget.db.getHabit(_habit.id);
       final log = await widget.db.logForHabitAndDate(_habit.id, widget.date);
@@ -74,6 +76,13 @@ class _TimerSheetState extends State<_TimerSheet> {
       setState(() {
         if (refreshed != null) _habit = refreshed;
       });
+      if (_habit.runningTimerStartedAt != null) {
+        await NotificationService.instance.showRunningTimerNotification(
+          habitId: _habit.id,
+          habitName: _habit.name,
+          startedAt: _habit.runningTimerStartedAt!,
+        );
+      }
       _startUiTicker();
     }
   }
